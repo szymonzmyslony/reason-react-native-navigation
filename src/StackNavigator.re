@@ -18,8 +18,6 @@ module Make (Impl: Impl) => {
   let gestureDistanceHorizontal = 75;
   let gestureDistanceVertical = 135;
   let updateOnScreenState nextState currentState _ {ReasonReact.state: state} =>
-    /*elResolvingSource _ _ => ReasonReact.Update {resolvedSource: None};
-      let resolveSource source {ReasonRea*/
     if (currentState === state.onScreenNavigationState) {
       ReasonReact.Update {...state, onScreenNavigationState: nextState}
     } else {
@@ -222,11 +220,7 @@ module Make (Impl: Impl) => {
             PanResponder.callback @@ (
               fun event gesture => {
                 let pageX = RNEvent.NativeEvent.pageX event;
-                let pageY =
-                  RNEvent.NativeEvent.pageY event; /*tateAsync
-  );
-
-let submitButton ::email ::pass*/
+                let pageY = RNEvent.NativeEvent.pageY event;
                 let currentDragDistance = gesture.dx;
                 let currentDragPosition = pageX;
                 let screenEdgeDistance = currentDragPosition -. currentDragDistance;
@@ -266,26 +260,16 @@ let submitButton ::email ::pass*/
                 let defaultVelocity = axisDistance /. animationDuration;
                 let velocity = max (abs_float gestureVelocity) defaultVelocity;
                 let resetDuration = movedDistance /. velocity;
-                let goBackDuration =
-                  (axisDistance -. movedDistance) /. velocity; /*asonReact.Update {...state, navigationState: tail}
-  };
-
-let push screen {Re*/
+                let goBackDuration = (axisDistance -. movedDistance) /. velocity;
                 if (gestureVelocity < (-0.5)) {
-                  /*ate: [screen, ...state.navigationState]};
-
-                    let u*/
                   reset resetToIndex::index duration::resetDuration ::position
                 } else if (
                   gestureVelocity > 1.
                 ) {
-                  /*ReasonReact.NoUpdate
-                    | `Success _ => Reas*/
                   goBackCard pop::goBack backFromIndex::index duration::goBackDuration ::position
                 } else if (
                   movedDistance > axisDistance /. 2.
                 ) {
-                  /*entica*/
                   goBackCard pop::goBack backFromIndex::index duration::goBackDuration ::position
                 } else {
                   reset resetToIndex::index duration::resetDuration ::position
