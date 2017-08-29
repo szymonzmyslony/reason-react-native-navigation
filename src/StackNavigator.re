@@ -9,7 +9,8 @@ module Make (Impl: Impl) => {
   type state = {
     width: float,
     position: Animated.Value.t,
-    onScreenNavigationState: list Impl.navigationState
+    onScreenNavigationState: list Impl.navigationState,
+    onBackAndroid: option (unit => bool)
   };
   let animationDuration = 300.;
   let positionThreshold = 0.5;
@@ -157,9 +158,19 @@ module Make (Impl: Impl) => {
       ::goBack => {
     ...component,
     initialState: fun () => {
+      onBackAndroid: None,
       width: 0.,
       position: Animated.Value.create 0.,
       onScreenNavigationState: navigationState
+    },
+    didMount: fun {update, state} => {
+      let backAndroid _ => {
+        let _ = goBack ();
+        true
+      };
+      let state = {...state, onBackAndroid: Some backAndroid};
+      BackHandler.addEventListener "hardwareBackPressReasonNative" backAndroid;
+      ReasonReact.Update state
     },
     didUpdate:
       fun {oldSelf: {state: {onScreenNavigationState}}, newSelf: {state: {position}, update}} => {
@@ -191,6 +202,12 @@ module Make (Impl: Impl) => {
         {...state, onScreenNavigationState: navigationState}
       }
     },
+    willUnmount: fun {state} =>
+      switch state.onBackAndroid {
+      | Some backAndroid =>
+        BackHandlerRe.removeEventListener "hardwareBackPressReasonNative" backAndroid
+      | _ => ()
+      },
     render: fun {update, state} => {
       let {position, onScreenNavigationState, width} = state;
       let index = List.length onScreenNavigationState - 1;
