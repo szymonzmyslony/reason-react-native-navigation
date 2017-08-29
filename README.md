@@ -4,12 +4,22 @@ Currently, only stack-navigation (standard slide from left for iOS and slide fro
 Main problem that we are trying to solve with this is passing props to child components in a straightforward and type-safe way.
 
 ## How to use it?
-AppNavigator is a functor that expects one type and one compare function between those types:
+StackNavigator is a functor that expects one type and one compare function between those types:
 ```
 module type Impl = {
   type navigationState;
   let compare: navigationState => navigationState => bool;
 };
+```
+
+This is how you create a functor:
+
+```
+module StackNavigator =
+  StackNavigator.Make {
+    type navigationState = screen;
+    let compare = compare;
+  };
 ```
 
 For example, in my simple app, I had:
@@ -34,7 +44,7 @@ like:
 ```
  render: fun {state, update, handle} =>
     ReasonReact.element @@
-    AppNavigator.make
+    StackNavigator.make
       navigationState::state.navigationState
       goBack::(update pop)
       getHeaderConfig::headerTitle
