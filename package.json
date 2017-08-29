@@ -1,0 +1,26 @@
+{
+	"name": "reason-react-native-navigation",
+	"version": "0.1.0",
+	"scripts": {
+    "build": "bsb -make-world",
+    "start": "bsb -make-world -w",
+    "clean": "bsb -clean-world",
+    "test": "exit 0"
+	},
+	"license": "MIT",
+	"keywords": ["reason", "navigation", "reasonml","bucklescript", "react-native"],
+	"author": "",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/szymonzmyslony/reason-react-native-navigation.git"
+	},
+	"devDependencies": {
+		"bs-platform": "^1.9.0"
+	},
+	"dependencies": {
+		"reason-react": "^0.2.3"
+	},
+	"peerDependencies": {
+		"react-native": "^0.46.0"
+	}
+}
