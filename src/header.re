@@ -141,7 +141,10 @@ module HeaderBackButton = {
     <Animated.View style=(Style.concat [style, styles##containerLeft])>
       <TouchableOpacity onPress style=styles##container>
         <View style=styles##container>
-          <Image style=styles##icon source=(Required (Packager.require "../../../back.png")) />
+          <Image
+            style=styles##icon
+            source=(Required (Packager.require "../../../assets/back.png"))
+          />
           (backButtonText text::"")
         </View>
       </TouchableOpacity>

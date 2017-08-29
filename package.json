@@ -18,7 +18,9 @@
 		"bs-platform": "^1.9.0"
 	},
 	"dependencies": {
-		"reason-react": "^0.2.3"
+		"reason-react": "^0.2.3",
+				"bs-react-native": "0.1.0"
+
 	},
 	"peerDependencies": {
 		"react-native": "^0.46.0"
