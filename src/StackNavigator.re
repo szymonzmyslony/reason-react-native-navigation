@@ -126,18 +126,13 @@ module Make (Impl: Impl) => {
         List.mapi (renderCardAndroid ::handlers ::position ::width ::titles) screens
       )
     </View>;
-  let stopAnimateScreen ::duration ::position ::newLength =>
-    Animated.(
-      CompositeAnimation.stop
-        Value.Timing.(
-          animate ::duration value::position toValue::(`raw (float @@ newLength - 1)) ()
-        )
-    );
-  let animateScreen ::duration ::callback=? ::position ::index ::toValue=(`raw (float @@ index)) () =>
+  let animateScreen ::duration ::callback=? ::position ::index ::toValue=(`raw (float @@ index)) () => {
+    Js.log index;
     Animated.(
       CompositeAnimation.start
         Value.Timing.(animate ::duration value::position ::toValue ()) ::?callback ()
-    );
+    )
+  };
   let reset ::resetToIndex ::duration ::position =>
     animateScreen ::duration ::position index::resetToIndex ();
   let goBackCard ::pop ::backFromIndex ::duration ::position => {
@@ -161,7 +156,7 @@ module Make (Impl: Impl) => {
       position: Animated.Value.create 0.,
       onScreenNavigationState: navigationState
     },
-    didMount: fun {update, state} => {
+    didMount: fun {state} => {
       let backAndroid _ => {
         let _ = goBack ();
         true
@@ -186,8 +181,12 @@ module Make (Impl: Impl) => {
     willReceiveProps: fun {state} => {
       let oldLength = List.length state.onScreenNavigationState;
       let newLength = List.length navigationState;
-      if (oldLength != newLength) {
+      if (oldLength < newLength) {
         {...state, onScreenNavigationState: navigationState}
+      } else if (
+        oldLength > newLength
+      ) {
+        state
       } else if (
         List.fold_left2
           (fun acc x1 x2 => acc && Impl.compare x1 x2)
@@ -220,7 +219,7 @@ module Make (Impl: Impl) => {
             PanResponder.callback @@ (
               fun event gesture => {
                 let pageX = RNEvent.NativeEvent.pageX event;
-                let pageY = RNEvent.NativeEvent.pageY event;
+                /* let pageY = RNEvent.NativeEvent.pageY event; */
                 let currentDragDistance = gesture.dx;
                 let currentDragPosition = pageX;
                 let screenEdgeDistance = currentDragPosition -. currentDragDistance;
