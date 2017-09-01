@@ -5,7 +5,7 @@ Main problem that we are trying to solve with this is passing props to child com
 
 ## How to use it?
 StackNavigator is a functor that expects one type and one compare function between those types:
-```
+```reason
 module type Impl = {
   type navigationState;
   let compare: navigationState => navigationState => bool;
@@ -14,7 +14,7 @@ module type Impl = {
 
 This is how you create a functor:
 
-```
+```reason
 module StackNavigator =
   StackNavigator.Make {
     type navigationState = screen;
@@ -23,7 +23,7 @@ module StackNavigator =
 ```
 
 For example, in my simple app, I had:
-```
+```reason
 type screen =
   | Login
   | MainScreen
@@ -41,7 +41,7 @@ The compare function is needed for resetting navigation state (when the size of 
 This library (at this point) requires navigation state to be managed by parent component. Thus, we need to pass 
 navigation state, pop, and push methods, and two render functions (header and screen). This is how root render in my app looks
 like:
-```
+```reason
  render: fun {state, update, handle} =>
     ReasonReact.element @@
     StackNavigator.make
@@ -58,7 +58,7 @@ like:
       )
 ```      
 renderScreen and render can take any arguments needed from the root of the app and pass it down to other screens:
-```
+```reason
 let renderScreen
     pop::(pop: 'a => unit)
     push::(push: screen => unit)
