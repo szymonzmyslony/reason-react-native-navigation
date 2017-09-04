@@ -127,7 +127,6 @@ module Make (Impl: Impl) => {
       )
     </View>;
   let animateScreen ::duration ::callback=? ::position ::index ::toValue=(`raw (float @@ index)) () => {
-    Js.log index;
     Animated.(
       CompositeAnimation.start
         Value.Timing.(animate ::duration value::position ::toValue ()) ::?callback ()

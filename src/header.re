@@ -72,7 +72,6 @@ module HeaderTitle = {
               fontWeight @@ getPlatformStyle `_600 `_500,
               color "rgba(0, 0, 0, .9)",
               textAlign @@ getPlatformStyle `center `left
-              /* marginHorizontal 16.0 */
             ]
         }
       );
