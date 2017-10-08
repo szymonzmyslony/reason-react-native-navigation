@@ -71,7 +71,8 @@ module HeaderTitle = {
               fontSize @@ getPlatformStyle 17.0 20.0,
               fontWeight @@ getPlatformStyle `_600 `_500,
               color "rgba(0, 0, 0, .9)",
-              textAlign @@ getPlatformStyle `center `left
+              textAlign @@ getPlatformStyle `center `left,
+              marginHorizontal 16.
             ]
         }
       );
@@ -79,12 +80,10 @@ module HeaderTitle = {
     let render ::title ::position ::index => {
       let computed = computedStyle ::position ::index;
       <Animated.View style=Style.(concat [computed, styles##titleContainer])>
-        <View style=styles##titleContainer>
-          (
-            ReasonReact.element @@
-            Animated.Text.make value::title numberOfLines::1 style::styles##title [||]
-          )
-        </View>
+        (
+          ReasonReact.element @@
+          Animated.Text.make value::title numberOfLines::1 style::styles##title [||]
+        )
       </Animated.View>
     };
   };
