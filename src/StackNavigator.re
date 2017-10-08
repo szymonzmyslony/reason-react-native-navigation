@@ -1,7 +1,4 @@
-module type Impl = {
-  type navigationState;
-  let compare: navigationState => navigationState => bool;
-};
+module type Impl = {type navigationState;};
 
 open ReactNative;
 
@@ -12,17 +9,14 @@ module Make (Impl: Impl) => {
     onScreenNavigationState: list Impl.navigationState,
     onBackAndroid: option (unit => bool)
   };
+  type action =
+    | UpdateWidth float
+    | UpdateOnScreenState (list Impl.navigationState) (list Impl.navigationState);
   let animationDuration = 300.;
   let positionThreshold = 0.5;
   let responeThreshold = 20.;
   let gestureDistanceHorizontal = 75;
   let gestureDistanceVertical = 135;
-  let updateOnScreenState nextState currentState _ {ReasonReact.state: state} =>
-    if (currentState === state.onScreenNavigationState) {
-      ReasonReact.Update {...state, onScreenNavigationState: nextState}
-    } else {
-      ReasonReact.NoUpdate
-    };
   let computedStyle ::position ::index ::width ::length => {
     let intIndex = index;
     let index = float index;
@@ -87,9 +81,9 @@ module Make (Impl: Impl) => {
       ]
     }
   };
-  let onLayout (event: RNEvent.NativeLayoutEvent.t) {ReasonReact.state: state} => {
+  let onLayout (event: RNEvent.NativeLayoutEvent.t) => {
     let width = (RNEvent.NativeLayoutEvent.layout event).width;
-    ReasonReact.Update {...state, width}
+    UpdateWidth width
   };
   let renderCard ::handlers ::position ::width ::length index screen => {
     let computed = computedStyle ::width ::position ::index ::length;
@@ -126,12 +120,11 @@ module Make (Impl: Impl) => {
         List.mapi (renderCardAndroid ::handlers ::position ::width ::titles) screens
       )
     </View>;
-  let animateScreen ::duration ::callback=? ::position ::index ::toValue=(`raw (float @@ index)) () => {
+  let animateScreen ::duration ::callback=? ::position ::index ::toValue=(`raw (float @@ index)) () =>
     Animated.(
       CompositeAnimation.start
         Value.Timing.(animate ::duration value::position ::toValue ()) ::?callback ()
-    )
-  };
+    );
   let reset ::resetToIndex ::duration ::position =>
     animateScreen ::duration ::position index::resetToIndex ();
   let goBackCard ::pop ::backFromIndex ::duration ::position => {
@@ -142,7 +135,7 @@ module Make (Impl: Impl) => {
     };
     animateScreen ::callback ::toValue ::duration ::position index::backFromIndex ()
   };
-  let component = ReasonReact.statefulComponent "AppNavigator";
+  let component = ReasonReact.reducerComponent "AppNavigator";
   let make
       navigationState::(navigationState: list Impl.navigationState)
       ::render
@@ -155,6 +148,16 @@ module Make (Impl: Impl) => {
       position: Animated.Value.create 0.,
       onScreenNavigationState: navigationState
     },
+    reducer: fun action state =>
+      switch action {
+      | UpdateWidth width => ReasonReact.Update {...state, width}
+      | UpdateOnScreenState nextState currentState =>
+        if (currentState === state.onScreenNavigationState) {
+          ReasonReact.Update {...state, onScreenNavigationState: nextState}
+        } else {
+          ReasonReact.NoUpdate
+        }
+      },
     didMount: fun {state} => {
       let backAndroid _ => {
         let _ = goBack ();
@@ -165,7 +168,7 @@ module Make (Impl: Impl) => {
       ReasonReact.Update state
     },
     didUpdate:
-      fun {oldSelf: {state: {onScreenNavigationState}}, newSelf: {state: {position}, update}} => {
+      fun {oldSelf: {state: {onScreenNavigationState}}, newSelf: {state: {position}, reduce}} => {
       let oldLength = List.length onScreenNavigationState;
       let newLength = List.length navigationState;
       if (oldLength == newLength) {
@@ -173,7 +176,8 @@ module Make (Impl: Impl) => {
       } else {
         let callback =
           oldLength <= newLength ?
-            None : Some (update (updateOnScreenState navigationState onScreenNavigationState));
+            None :
+            Some (reduce (fun _ => UpdateOnScreenState navigationState onScreenNavigationState));
         animateScreen duration::animationDuration ::?callback ::position index::(newLength - 1) ()
       }
     },
@@ -188,10 +192,7 @@ module Make (Impl: Impl) => {
         state
       } else if (
         List.fold_left2
-          (fun acc x1 x2 => acc && Impl.compare x1 x2)
-          true
-          state.onScreenNavigationState
-          navigationState
+          (fun acc x1 x2 => acc && x1 == x2) true state.onScreenNavigationState navigationState
       ) {
         state
       } else {
@@ -204,7 +205,7 @@ module Make (Impl: Impl) => {
         BackHandlerRe.removeEventListener "hardwareBackPressReasonNative" backAndroid
       | _ => ()
       },
-    render: fun {update, state} => {
+    render: fun {reduce, state} => {
       let {position, onScreenNavigationState, width} = state;
       let index = List.length onScreenNavigationState - 1;
       let panResponder =
@@ -284,7 +285,7 @@ module Make (Impl: Impl) => {
           | IOS => renderIOS ::goBack
           | _ => renderAndroid
           };
-        <View onLayout=(update onLayout) style=Style.(style [flex 1.])>
+        <View onLayout=(reduce (fun e => onLayout e)) style=Style.(style [flex 1.])>
           (
             f
               handlers::(PanResponder.panHandlers panResponder)
