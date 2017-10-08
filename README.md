@@ -3,6 +3,16 @@ This is a simple react native navigation written in reason. It has been created 
 Currently, only stack-navigation (standard slide from left for iOS and slide from button from Android) is implemented.
 Main problem that we are trying to solve with this is passing props to child components in a straightforward and type-safe way.
 
+## How does it look like?
+The example app is avaialble at https://github.com/szymonzmyslony/reason-react-native-navigation-exampleApp
+
+
+This is how this example app looks like:
+![Switch between screens](reason-navigation.gif)
+
+As you can see the count update (state of the root component) doesn't get rerendered when you click increment or decrement on the second screen. This is the first issue that I will be working on solving.
+
+
 ## How to use it?
 StackNavigator is a functor that expects one type and one compare function between those types:
 ```reason
