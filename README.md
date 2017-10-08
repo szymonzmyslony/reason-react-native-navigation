@@ -13,12 +13,11 @@ This is how this example app looks like:
 As you can see the count update (state of the root component) doesn't get rerendered when you click increment or decrement on the second screen. This is the first issue that I will be working on solving.
 
 
-## How to use it?
-StackNavigator is a functor that expects one type and one compare function between those types:
+## How to use it (when you want to have a full control over your navigation state)?
+StackNavigator is a functor that expects one type for your navigationState variant:
 ```reason
 module type Impl = {
   type navigationState;
-  let compare: navigationState => navigationState => bool;
 };
 ```
 
@@ -28,7 +27,6 @@ This is how you create a functor:
 module StackNavigator =
   StackNavigator.Make {
     type navigationState = screen;
-    let compare = compare;
   };
 ```
 
@@ -39,16 +37,8 @@ type screen =
   | MainScreen
   | Player int string;
 
-let compare a b =>
-  switch (a, b) {
-  | (Login, Login)
-  | (MainScreen, MainScreen) => true
-  | (Player a b, Player x y) => a == x && b == y
-  | _ => false
-  };
 ```
-The compare function is needed for resetting navigation state (when the size of route stack doesn't change).
-This library (at this point) requires navigation state to be managed by parent component. Thus, we need to pass 
+StackNavigator requires navigation state to be managed by parent component. Thus, we need to pass 
 navigation state, pop, and push methods, and two render functions (header and screen). This is how root render in my app looks
 like:
 ```reason
@@ -89,6 +79,10 @@ let headerTitle screen =>
   | _ => "test"
   };
   ```
+
+  New StatefullStackNavigator module avoid boilerplate for push and pop actions. 
+  The example app (https://github.com/szymonzmyslony/reason-react-native-navigation-exampleApp)
+  is showing how to use it. 
 
 
 
