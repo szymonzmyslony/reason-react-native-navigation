@@ -1,6 +1,6 @@
 {
 	"name": "reason-react-native-navigation",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "This is a simple react native navigation written in reason.",
 	"scripts": {
     "build": "bsb -make-world",
@@ -17,15 +17,9 @@
 	},
 	"homepage": "https://github.com/szymonzmyslony/reason-react-native-navigation#readme",
 	"bugs": "https://github.com/szymonzmyslony/reason-react-native-navigation/issues",
-	"devDependencies": {
-		"bs-platform": "^1.9.0"
-	},
-	"dependencies": {
-		"reason-react": "^0.2.3",
-				"bs-react-native": "0.1.0"
-
-	},
 	"peerDependencies": {
-		"react-native": "^0.46.0"
+		"bs-platform": "^4.0.18",
+		"reason-react": "0.6.0",
+		"bs-react-native": "github:reasonml-community/bs-react-native#969b69edaad8ebbfe4715fe5a99f8952fcf9ec35"
 	}
 }
